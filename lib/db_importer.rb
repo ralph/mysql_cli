@@ -27,7 +27,7 @@ class DbImporter
     self.credentials = db_credentials
   end
 
-  def sql(file_or_string)
+  def sql(file_or_string, ignore_errors = false)
     params = '-h :host -u :username'
     params = "-p:password #{params}" if credentials[:password].present?
     if File.extname(file_or_string) == '.sql'
@@ -36,12 +36,14 @@ class DbImporter
     elsif File.extname(file_or_string) == '.gz'
       params = "< :file_path | mysql #{params} #{credentials[:database]}"
       param_values = credentials.merge(file_path: file_or_string.path)
+      param_values.merge!(expected_outcodes: [0, 1]) if ignore_errors
       cl = Cocaine::CommandLine.new('gunzip', params, param_values)
     else
       params = "-e :sql #{params}"
       use_db_sql = "USE #{credentials[:database]}; #{file_or_string}"
       param_values = credentials.merge(sql: use_db_sql)
     end
+    param_values.merge!(expected_outcodes: [0, 1]) if ignore_errors
     cl ||= Cocaine::CommandLine.new('mysql', params, param_values)
     run cl
   end
