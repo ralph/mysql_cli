@@ -1,5 +1,3 @@
-ENV['RAILS_ENV'] ||= 'development'
-
 require 'db_importer/version'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/object/blank'
@@ -20,8 +18,8 @@ class DbImporter
     self.log = false
   end
 
-  def read_credentials_from_config(config_file)
-    db_credentials = YAML.load_file(config_file)[ENV['RAILS_ENV']]
+  def read_credentials_from_config(config_file, env = 'development')
+    db_credentials = YAML.load_file(config_file)[env]
     db_credentials.symbolize_keys!
     db_credentials[:host] ||= '127.0.0.1'
     db_credentials[:username] ||= 'root'
@@ -41,7 +39,8 @@ class DbImporter
       cl = Cocaine::CommandLine.new('gunzip', params, param_values)
     else
       params = "-e :sql #{params}"
-      param_values = credentials.merge(sql: file_or_string)
+      use_db_sql = "USE #{credentials[:database]}; #{file_or_string}"
+      param_values = credentials.merge(sql: use_db_sql)
     end
     cl ||= Cocaine::CommandLine.new('mysql', params, param_values)
     run cl

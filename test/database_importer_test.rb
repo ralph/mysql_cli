@@ -27,7 +27,7 @@ class DbImporterTest < MiniTest::Unit::TestCase
 
   class Sql < self
     def test_sql_string
-      expected = "mysql -e 'show databases' -h '127.0.0.1' -u 'root'"
+      expected = "mysql -e 'USE application_development; show databases' -h '127.0.0.1' -u 'root'"
       assert_equal expected, @dbi.sql('show databases')
     end
 
