@@ -1,10 +1,12 @@
 require 'minitest/autorun'
-require './database_importer'
+require 'db_importer'
 
-class DatabaseImporterTest < MiniTest::Unit::TestCase
+class DbImporterTest < MiniTest::Unit::TestCase
+  TEST_ROOT=Pathname.new(__FILE__).dirname
+
   def setup
-    @dbi = DatabaseImporter.new
-    @dbi.read_credentials_from_config('database.yml')
+    @dbi = DbImporter.new
+    @dbi.read_credentials_from_config(TEST_ROOT.join('database.yml'))
   end
 
 
@@ -17,7 +19,6 @@ class DatabaseImporterTest < MiniTest::Unit::TestCase
     end
 
     def test_read_credentials_from_config
-      @dbi.read_credentials_from_config('database.yml')
       refute @dbi.credentials.values_at(:host, :username).include?(nil)
     end
   end
@@ -31,13 +32,15 @@ class DatabaseImporterTest < MiniTest::Unit::TestCase
     end
 
     def test_sql_file
-      expected = "mysql -h '127.0.0.1' -u 'root' application_development < 'dump.sql'"
-      assert_equal expected, @dbi.sql(File.new('dump.sql'))
+      path = TEST_ROOT.join('dump.sql').to_s
+      expected = "mysql -h '127.0.0.1' -u 'root' application_development < '#{path}'"
+      assert_equal expected, @dbi.sql(File.new path)
     end
 
     def test_gzipped_sql_file
-      expected = "gunzip < 'dump.sql.gz' | mysql -h '127.0.0.1' -u 'root' application_development"
-      assert_equal expected, @dbi.sql(File.new('dump.sql.gz'))
+      path = TEST_ROOT.join('dump.sql.gz').to_s
+      expected = "gunzip < '#{path}' | mysql -h '127.0.0.1' -u 'root' application_development"
+      assert_equal expected, @dbi.sql(File.new path)
     end
   end
 

@@ -1,12 +1,13 @@
 ENV['RAILS_ENV'] ||= 'development'
 
+require 'db_importer/version'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/logger.rb'
 require 'cocaine'
 require 'yaml'
 
-class DatabaseImporter
+class DbImporter
   attr_accessor *[
     :credentials,
     :dry_run,
