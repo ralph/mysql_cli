@@ -1,0 +1,25 @@
+development:
+  adapter: mysql2
+  encoding: utf8
+  database: application_development
+  username: root
+  password:
+staging:
+  adapter: mysql2
+  encoding: utf8
+  database: application_development
+  username: root
+  password:
+test:
+  adapter: mysql2
+  encoding: utf8
+  database: application_test
+  username: root
+  password:
+  pool: 5
+production:
+  adapter: mysql2
+  encoding: utf8
+  database: application_development
+  username: root
+  password:
