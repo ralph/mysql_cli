@@ -48,14 +48,6 @@ class DbImporter
     run cl
   end
 
-  def delete_and_recreate_db
-    sql_string =<<-EOS
-      drop database #{credentials[:database]};
-      create database #{credentials[:database]};
-    EOS
-    sql sql_string
-  end
-
   def run(cl)
     puts cl.command if log
     dry_run? ? cl.command : cl.run
